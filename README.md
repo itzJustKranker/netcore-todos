@@ -59,9 +59,15 @@ that will ensure your database is configured to work with this application. From
 
 If you have completed the setup steps above, you are now ready to build and run the application.
 
-The projects run configurations are defined within `src/Todos.WebUI/Properties/launchSettings.json`. You should target your IDE to run the `Todos.WebUI` profile.
+> Ensure that your SQL Server instance is running and you have defined the correct connection string within the 
+> `appsettings.development.json` file before attempting to start the application.
+
+The projects run configurations are defined within `launchSettings.json` in the `src/Todos.WebUI/Properties` directory. 
+You should target your IDE to run the `Todos.WebUI` profile. If you are using Visual Studio, you should set the startup
+project as `Todos.WebUI`.
+
 If you are not using an IDE, the project can also be started from the command line.
-From within the `Todos.WebUI` directory, run the following command to run the application
+From within the `Todos.WebUI` directory, run the following command to start the application.
 
 ```bash
 dotnet run
