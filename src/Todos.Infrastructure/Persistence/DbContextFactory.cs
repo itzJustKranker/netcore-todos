@@ -12,12 +12,12 @@ namespace Todos.Infrastructure.Persistence
         {
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
-                .AddJsonFile("local.settings.json")
+                .AddJsonFile("appsettings.development.json")
                 .Build();
             
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
             
-            optionsBuilder.UseSqlServer(configuration.GetSection("Values").GetValue<string>("DbSettings:SqlConnectionString") ?? string.Empty);
+            optionsBuilder.UseSqlServer(configuration.GetSection("ConnectionStrings").GetValue<string>("DefaultConnectionString") ?? string.Empty);
 
             return new ApplicationDbContext(optionsBuilder.Options);
         }
