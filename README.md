@@ -14,8 +14,8 @@ Be sure to select the appropriate installer for your operating system.
    setup in the next steps. Once you have the dotnet SDK CLI installed from above, go ahead and 
    run this command from a terminal (i.e. Powershell, CMD, Bash, etc.)
    
-```bash
-   dotnet tool install --global dotnet-ef
+```shell
+$ dotnet tool install --global dotnet-ef
 ```
 
 3. This application requires a SQL Server instance to store application data, if you are running
@@ -40,20 +40,22 @@ This connection string should be placed within the designated setting slot `Conn
 
 7. After you have defined your SQL Server instance connection string, you are ready to run the migrations
 that will ensure your database is configured to work with this application. From a terminal, `cd` into your projects root directory (i.e. ~/netcore-todos)
-    
+
     1. `cd` into the `Todos.WebUI` project
     
-    ```bash
-       cd src/Todos.WebUI 
+    ```shell
+    $ cd src/Todos.WebUI 
     ```
 
     2. from the `Todos.WebUI` project, run the following command. Ensure that your SQL Server instance is running, and you have added the proper
     connection string to your `appsettings.development.json` file
-   ```bash
-   dotnet ef database update -p "../Todos.Infrastructure"
-   ```
-    This should build the project and apply the migrations to the database you have created and set in your
-    connection string.
+
+    ```shell
+    $ dotnet ef database update -p "../Todos.Infrastructure"
+    ```
+    
+This should build the project and apply the migrations to the database you have created and set in your
+connection string.
 
 ## Run
 
@@ -69,6 +71,6 @@ project as `Todos.WebUI`.
 If you are not using an IDE, the project can also be started from the command line.
 From within the `Todos.WebUI` directory, run the following command to start the application.
 
-```bash
-dotnet run
+```shell
+$ dotnet run
 ```
