@@ -39,15 +39,9 @@ is meant to act as a blank example file, not to store any setting values.
 This connection string should be placed within the designated setting slot `ConnectionStrings:DefaultConnectionString: ""`.
 
 7. After you have defined your SQL Server instance connection string, you are ready to run the migrations
-that will ensure your database is configured to work with this application. From a terminal, `cd` into your projects root directory (i.e. ~/netcore-todos)
-
-    1. `cd` into the `Todos.WebUI` project
-    
-    ```shell
-    $ cd src/Todos.WebUI 
-    ```
-
-    2. from the `Todos.WebUI` project, run the following command. Ensure that your SQL Server instance is running, and you have added the proper
+that will ensure your database is configured to work with this application. From a terminal, `cd` into the `Todos.WebUI` project directory.
+   
+    1. from the `Todos.WebUI` project, run the following command. Ensure that your SQL Server instance is running, and you have added the proper
     connection string to your `appsettings.development.json` file
 
     ```shell
