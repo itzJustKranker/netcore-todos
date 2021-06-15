@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using Todos.Application.Interfaces;
@@ -93,6 +94,94 @@ namespace Todos.Application.Tests
             
             // Assert
             Assert.Equal(expectedList, actual);
+        }
+        
+        [Fact]
+        public async Task CreateAsync_ShouldCreateItem()
+        {
+            // Arrange
+            var expectedList = new TodoList()
+            {
+                Id = 1,
+                Title = "Todo List Created"
+            };
+            var expectedItems = new List<TodoList>();
+            var mockDbSet = DbContextMockHelper.GetQueryableMockDbSet(expectedItems);
+            var dbContextMock = new Mock<IApplicationDbContext>();
+            dbContextMock.Setup(_ => _.Set<TodoList>())
+                .Returns(mockDbSet.Object);
+
+            mockDbSet.Setup(_ => _.AddAsync(It.IsAny<TodoList>(), It.IsAny<CancellationToken>()))
+                .Callback<TodoList, CancellationToken>((item, token) => expectedItems.Add(item));
+
+            var sut = new TodoListRepository(dbContextMock.Object);
+            
+            // Act
+            await sut.CreateAsync(expectedList);
+            
+            // Assert
+            Assert.Contains(expectedList, expectedItems);
+        }
+        
+        [Fact]
+        public async Task UpdateAsync_ShouldUpdateExistingItem()
+        {
+            // Arrange
+            var existingList = new TodoList()
+            {
+                Id = 1,
+                Title = "Todo List"
+            };
+            var expectedItems = new List<TodoList>() { existingList };
+            var mockDbSet = DbContextMockHelper.GetQueryableMockDbSet(expectedItems);
+            var dbContextMock = new Mock<IApplicationDbContext>();
+            dbContextMock.Setup(_ => _.Set<TodoList>())
+                .Returns(mockDbSet.Object);
+
+            var updatedItem = new TodoList()
+            {
+                Id = 1,
+                Title = "Todo List Updated"
+            };
+            
+            mockDbSet.Setup(_ => _.Update(It.IsAny<TodoList>()))
+                .Callback<TodoList>(item =>
+                    expectedItems[expectedItems.FindIndex(x => x.Id == existingList.Id)] = item);
+
+            var sut = new TodoListRepository(dbContextMock.Object);
+            
+            // Act
+            await sut.UpdateAsync(updatedItem);
+            
+            // Assert
+            Assert.Contains(updatedItem, expectedItems);
+        }
+        
+        [Fact]
+        public async Task DeleteAsync_ShouldRemoveExistingItem()
+        {
+            // Arrange
+            var existingList = new TodoList()
+            {
+                Id = 1,
+                Title = "Todo List"
+            };
+            var expectedItems = new List<TodoList>() { existingList };
+            var mockDbSet = DbContextMockHelper.GetQueryableMockDbSet(expectedItems);
+            var dbContextMock = new Mock<IApplicationDbContext>();
+            dbContextMock.Setup(_ => _.Set<TodoList>())
+                .Returns(mockDbSet.Object);
+
+            mockDbSet.Setup(_ => _.Remove(It.IsAny<TodoList>()))
+                .Callback<TodoList>(item => expectedItems.Remove(item));
+
+            var sut = new TodoListRepository(dbContextMock.Object);
+            
+            // Act
+            await sut.DeleteAsync(existingList);
+            
+            // Assert
+            Assert.DoesNotContain(existingList, expectedItems);
         }
     }
 }
