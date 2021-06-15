@@ -1,13 +1,14 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Todos.Application.Interfaces;
 using Todos.Application.Repositories;
-using Todos.Domain.Entities;
 using Todos.Infrastructure.Persistence;
 
 namespace Todos.Infrastructure
 {
+    [ExcludeFromCodeCoverage]
     public static class IServiceCollectionExtension
     {
         public static IServiceCollection AddInternalServices(this IServiceCollection services)
@@ -16,8 +17,8 @@ namespace Todos.Infrastructure
             services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
             
             // Register Repositories
-            services.AddScoped<IAsyncCrudRepository<TodoItem>, TodoItemRepository>();
-            services.AddScoped<IAsyncCrudRepository<TodoList>, TodoListRepository>();
+            services.AddScoped<ITodoItemRepository, TodoItemRepository>();
+            services.AddScoped<ITodoListRepository, TodoListRepository>();
 
             return services;
         }

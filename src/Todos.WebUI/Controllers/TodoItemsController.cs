@@ -5,7 +5,7 @@ namespace Todos.WebUI.Controllers
 {
     public class TodoItemsController : ApiCrudControllerBase<TodoItem>
     {
-        public TodoItemsController(IAsyncCrudRepository<TodoItem> repository) : base(repository)
+        public TodoItemsController(ITodoItemRepository repository) : base(repository)
         {
         }
     }

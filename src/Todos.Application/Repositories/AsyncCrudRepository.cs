@@ -32,14 +32,14 @@ namespace Todos.Application.Repositories
         {
             var created = await _dbSet.AddAsync(entity);
             await _context.SaveChangesAsync(default);
-            return created.Entity;
+            return created?.Entity;
         }
 
         public async Task<TEntity> UpdateAsync(TEntity entity)
         {
             var updated = _dbSet.Update(entity);
             await _context.SaveChangesAsync(default);
-            return updated.Entity;
+            return updated?.Entity;
         }
 
         public async Task DeleteAsync(TEntity entity)
