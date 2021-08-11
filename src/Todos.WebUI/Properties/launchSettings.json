@@ -19,7 +19,7 @@
     },
     "Todos.WebUI": {
       "commandName": "Project",
-      "launchBrowser": true,
+      "launchBrowser": false,
       "launchUrl": "api/todolists",
       "applicationUrl": "https://localhost:5001;",
       "environmentVariables": {
