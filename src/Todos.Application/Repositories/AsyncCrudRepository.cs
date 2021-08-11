@@ -9,7 +9,7 @@ namespace Todos.Application.Repositories
     public class AsyncCrudRepository<TEntity> : IAsyncCrudRepository<TEntity> where TEntity : BaseEntity
     {
         private readonly IApplicationDbContext _context;
-        private readonly DbSet<TEntity> _dbSet;
+        protected readonly DbSet<TEntity> _dbSet;
 
         protected AsyncCrudRepository(IApplicationDbContext context)
         {
