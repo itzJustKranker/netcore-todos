@@ -13,12 +13,12 @@ namespace Todos.WebUI.Tests
     [ExcludeFromCodeCoverage]
     public class TodoListsControllerTests
     {
-        private readonly Mock<ITodoListRepository> _mockTodoItemRepository = new Mock<ITodoListRepository>();
+        private readonly Mock<ITodoListRepository> _mockTodoListRepository = new Mock<ITodoListRepository>();
         private readonly TodoListsController _sut;
 
         public TodoListsControllerTests()
         {
-            _sut = new TodoListsController(_mockTodoItemRepository.Object);
+            _sut = new TodoListsController(_mockTodoListRepository.Object);
         }
 
         [Fact]
@@ -33,7 +33,7 @@ namespace Todos.WebUI.Tests
                     Title = "Todo List"
                 }
             };
-            _mockTodoItemRepository.Setup(_ => _.GetAllAsync())
+            _mockTodoListRepository.Setup(_ => _.GetAllAsync())
                 .ReturnsAsync(expectedItems);
             
             // Act
@@ -41,7 +41,7 @@ namespace Todos.WebUI.Tests
             var actual = result as OkObjectResult;
 
             // Assert
-            _mockTodoItemRepository.VerifyAll();
+            _mockTodoListRepository.VerifyAll();
             
             Assert.IsType<OkObjectResult>(result);
             Assert.NotNull(actual);
@@ -57,7 +57,7 @@ namespace Todos.WebUI.Tests
                 Id = 1,
                 Title = "Todo List"
             };
-            _mockTodoItemRepository.Setup(_ => _.GetAsync(1))
+            _mockTodoListRepository.Setup(_ => _.GetAsync(1))
                 .ReturnsAsync(expectedItem);
             
             // Act
@@ -65,7 +65,7 @@ namespace Todos.WebUI.Tests
             var actual = result as OkObjectResult;
 
             // Assert
-            _mockTodoItemRepository.VerifyAll();
+            _mockTodoListRepository.VerifyAll();
             
             Assert.IsType<OkObjectResult>(result);
             Assert.NotNull(actual);
@@ -82,7 +82,7 @@ namespace Todos.WebUI.Tests
                 Id = 1,
                 Title = "Todo List"
             };
-            _mockTodoItemRepository.Setup(_ => _.CreateAsync(input))
+            _mockTodoListRepository.Setup(_ => _.CreateAsync(input))
                 .ReturnsAsync(expectedItem);
             
             // Act
@@ -90,7 +90,7 @@ namespace Todos.WebUI.Tests
             var actual = result as OkObjectResult;
 
             // Assert
-            _mockTodoItemRepository.VerifyAll();
+            _mockTodoListRepository.VerifyAll();
             
             Assert.IsType<OkObjectResult>(result);
             Assert.NotNull(actual);
@@ -107,7 +107,7 @@ namespace Todos.WebUI.Tests
                 Id = 1,
                 Title = "Todo List Updated"
             };
-            _mockTodoItemRepository.Setup(_ => _.UpdateAsync(input))
+            _mockTodoListRepository.Setup(_ => _.UpdateAsync(input))
                 .ReturnsAsync(expectedItem);
             
             // Act
@@ -115,7 +115,7 @@ namespace Todos.WebUI.Tests
             var actual = result as OkObjectResult;
 
             // Assert
-            _mockTodoItemRepository.VerifyAll();
+            _mockTodoListRepository.VerifyAll();
             
             Assert.IsType<OkObjectResult>(result);
             Assert.NotNull(actual);
@@ -132,7 +132,7 @@ namespace Todos.WebUI.Tests
             var result = await _sut.Update(2, input);
 
             // Assert
-            _mockTodoItemRepository.VerifyAll();
+            _mockTodoListRepository.VerifyAll();
             
             Assert.IsType<BadRequestResult>(result);
         }
@@ -142,14 +142,14 @@ namespace Todos.WebUI.Tests
         {
             // Arrange
             var input = new TodoList() { Id = 1, Title = "Todo List To Delete"};
-            _mockTodoItemRepository.Setup(_ => _.DeleteAsync(input))
+            _mockTodoListRepository.Setup(_ => _.DeleteAsync(input))
                 .Returns(Task.CompletedTask);
 
             // Act
             var result = await _sut.Delete(1, input);
 
             // Assert
-            _mockTodoItemRepository.Verify(_ => _.DeleteAsync(input), Times.Once);
+            _mockTodoListRepository.Verify(_ => _.DeleteAsync(input), Times.Once);
             
             Assert.IsType<NoContentResult>(result);
         }
@@ -164,7 +164,7 @@ namespace Todos.WebUI.Tests
             var result = await _sut.Delete(2, input);
 
             // Assert
-            _mockTodoItemRepository.Verify(_ => _.DeleteAsync(It.IsAny<TodoList>()), Times.Never);
+            _mockTodoListRepository.Verify(_ => _.DeleteAsync(It.IsAny<TodoList>()), Times.Never);
             
             Assert.IsType<BadRequestResult>(result);
         }
