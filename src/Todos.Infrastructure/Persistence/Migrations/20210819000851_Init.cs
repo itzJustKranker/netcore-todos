@@ -1,9 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Todos.Infrastructure.Migrations
 {
-    [ExcludeFromCodeCoverage]
     public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -12,8 +11,10 @@ namespace Todos.Infrastructure.Migrations
                 name: "TodoLists",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    UpdatedAt = table.Column<DateTime>(nullable: false),
                     Title = table.Column<string>(maxLength: 200, nullable: false)
                 },
                 constraints: table =>
@@ -25,12 +26,15 @@ namespace Todos.Infrastructure.Migrations
                 name: "TodoItems",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    UpdatedAt = table.Column<DateTime>(nullable: false),
                     Title = table.Column<string>(maxLength: 200, nullable: false),
                     Description = table.Column<string>(nullable: true),
                     Completed = table.Column<bool>(nullable: false),
-                    ListId = table.Column<int>(nullable: false)
+                    Priority = table.Column<int>(nullable: false),
+                    ListId = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {

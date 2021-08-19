@@ -9,42 +9,42 @@ namespace Todos.Application.Repositories
     public class AsyncCrudRepository<TEntity> : IAsyncCrudRepository<TEntity> where TEntity : BaseEntity
     {
         private readonly IApplicationDbContext _context;
-        protected readonly DbSet<TEntity> _dbSet;
+        protected readonly DbSet<TEntity> DbSet;
 
         protected AsyncCrudRepository(IApplicationDbContext context)
         {
             _context = context;
-            _dbSet = context.Set<TEntity>();
+            DbSet = context.Set<TEntity>();
         }
         
         public async Task<IList<TEntity>> GetAllAsync()
         {
-            return await _dbSet.AsNoTracking()
+            return await DbSet.AsNoTracking()
                 .ToListAsync();
         }
 
-        public async Task<TEntity> GetAsync(int id)
+        public async Task<TEntity> GetAsync(long id)
         {
-            return await _dbSet.FirstOrDefaultAsync(x => x.Id == id);
+            return await DbSet.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<TEntity> CreateAsync(TEntity entity)
         {
-            var created = await _dbSet.AddAsync(entity);
+            var created = await DbSet.AddAsync(entity);
             await _context.SaveChangesAsync(default);
             return created?.Entity;
         }
 
         public async Task<TEntity> UpdateAsync(TEntity entity)
         {
-            var updated = _dbSet.Update(entity);
+            var updated = DbSet.Update(entity);
             await _context.SaveChangesAsync(default);
             return updated?.Entity;
         }
 
         public async Task DeleteAsync(TEntity entity)
         {
-            _dbSet.Remove(entity);
+            DbSet.Remove(entity);
             await _context.SaveChangesAsync(default);
         }
     }

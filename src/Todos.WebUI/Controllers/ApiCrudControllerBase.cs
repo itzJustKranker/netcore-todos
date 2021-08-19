@@ -17,28 +17,28 @@ namespace Todos.WebUI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public virtual async Task<IActionResult> GetAll()
         {
             var allEntities = await _repository.GetAllAsync();
             return new OkObjectResult(allEntities);
         }
         
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById([FromRoute] int id)
+        [HttpGet("{id:long}")]
+        public virtual async Task<IActionResult> GetById([FromRoute] long id)
         {
             var entity = await _repository.GetAsync(id);
             return new OkObjectResult(entity);
         }
         
         [HttpPost("create")]
-        public async Task<IActionResult> Create([FromBody] TEntity entity)
+        public virtual async Task<IActionResult> Create([FromBody] TEntity entity)
         {
             var created = await _repository.CreateAsync(entity);
             return new OkObjectResult(created);
         }
         
-        [HttpPatch("{id:int}/update")]
-        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] TEntity entity)
+        [HttpPatch("{id:long}/update")]
+        public virtual async Task<IActionResult> Update([FromRoute] long id, [FromBody] TEntity entity)
         {
             if (id != entity.Id)
                 return new BadRequestResult();
@@ -47,8 +47,8 @@ namespace Todos.WebUI.Controllers
             return new OkObjectResult(updated);
         }
         
-        [HttpDelete("{id:int}/delete")]
-        public async Task<IActionResult> Delete([FromRoute] int id, [FromBody] TEntity entity)
+        [HttpDelete("{id:long}/delete")]
+        public virtual async Task<IActionResult> Delete([FromRoute] long id, [FromBody] TEntity entity)
         {
             if (id != entity.Id)
                 return new BadRequestResult();
