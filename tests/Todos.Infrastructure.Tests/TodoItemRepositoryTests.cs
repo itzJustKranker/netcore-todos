@@ -4,12 +4,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using Todos.Application.Interfaces;
-using Todos.Application.Repositories;
-using Todos.Application.Tests.Helpers;
 using Todos.Domain.Entities;
+using Todos.Infrastructure.Repositories;
+using Todos.Infrastructure.Tests.Helpers;
 using Xunit;
 
-namespace Todos.Application.Tests
+namespace Todos.Infrastructure.Tests
 {
     [ExcludeFromCodeCoverage]
     public class TodoItemRepositoryTests

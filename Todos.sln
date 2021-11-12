@@ -12,7 +12,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Todos.Infrastructure", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Todos.WebUI", "src\Todos.WebUI\Todos.WebUI.csproj", "{42E804C7-8029-44CC-B96B-8C8A9D2FD916}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Todos.Application.Tests", "tests\Todos.Application.Tests\Todos.Application.Tests.csproj", "{23EF20BC-F33B-4B8F-9DB6-28E6D4E5F753}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Todos.Infrastructure.Tests", "tests\Todos.Infrastructure.Tests\Todos.Infrastructure.Tests.csproj", "{23EF20BC-F33B-4B8F-9DB6-28E6D4E5F753}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Todos.WebUI.Tests", "tests\Todos.WebUI.Tests\Todos.WebUI.Tests.csproj", "{80B355D9-E90A-4BA4-A4AF-0B3319ED2267}"
 EndProject

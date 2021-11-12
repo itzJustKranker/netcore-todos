@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using MockQueryable.Moq;
 using Moq;
 
-namespace Todos.Application.Tests.Helpers
+namespace Todos.Infrastructure.Tests.Helpers
 {
     [ExcludeFromCodeCoverage]
     public static class DbContextMockHelper 

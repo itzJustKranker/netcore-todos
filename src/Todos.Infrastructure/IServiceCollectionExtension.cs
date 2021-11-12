@@ -3,8 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Todos.Application.Interfaces;
-using Todos.Application.Repositories;
 using Todos.Infrastructure.Persistence;
+using Todos.Infrastructure.Repositories;
 
 namespace Todos.Infrastructure
 {

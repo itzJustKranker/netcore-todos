@@ -1,7 +1,7 @@
 using Todos.Application.Interfaces;
 using Todos.Domain.Entities;
 
-namespace Todos.Application.Repositories
+namespace Todos.Infrastructure.Repositories
 {
     public class TodoItemRepository : AsyncCrudRepository<TodoItem>, ITodoItemRepository
     {
