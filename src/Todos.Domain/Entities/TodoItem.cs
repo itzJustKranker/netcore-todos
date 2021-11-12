@@ -1,7 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using Todos.Domain.Common;
 
 namespace Todos.Domain.Entities
 {
+    [ExcludeFromCodeCoverage]
     public class TodoItem : AuditedEntity
     {
         public string Title { get; set; }
