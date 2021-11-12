@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Todos.Application.Interfaces;
 using Todos.Domain.Entities;
@@ -18,7 +19,7 @@ namespace Todos.WebUI.Tests
 
         public TodoItemsControllerTests()
         {
-            _sut = new TodoItemsController(_mockTodoItemRepository.Object);
+            _sut = new TodoItemsController(new NullLogger<TodoItemsController>(), _mockTodoItemRepository.Object);
         }
 
         [Fact]
