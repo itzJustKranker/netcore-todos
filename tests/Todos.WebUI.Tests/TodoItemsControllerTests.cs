@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
@@ -50,6 +52,24 @@ namespace Todos.WebUI.Tests
         }
         
         [Fact]
+        public async Task GetAll_ShouldReturn500_WhenRepoThrows()
+        {
+            // Arrange
+            _mockTodoItemRepository.Setup(_ => _.GetAllAsync())
+                .ThrowsAsync(new Exception("Unexpected Error"));
+            
+            // Act
+            var result = await _sut.GetAll();
+            var actual = result as StatusCodeResult;
+
+            // Assert
+            _mockTodoItemRepository.VerifyAll();
+            
+            Assert.NotNull(actual);
+            Assert.Equal(StatusCodes.Status500InternalServerError, actual.StatusCode);
+        }
+        
+        [Fact]
         public async Task GetById_ShouldReturnTodoItem()
         {
             // Arrange
@@ -71,6 +91,24 @@ namespace Todos.WebUI.Tests
             Assert.IsType<OkObjectResult>(result);
             Assert.NotNull(actual);
             Assert.Equal(expectedItem, actual.Value);
+        }
+        
+        [Fact]
+        public async Task GetById_ShouldReturn500_WhenRepoThrows()
+        {
+            // Arrange
+            _mockTodoItemRepository.Setup(_ => _.GetAsync(1))
+                .ThrowsAsync(new Exception("Unexpected Error"));
+            
+            // Act
+            var result = await _sut.GetById(1);
+            var actual = result as StatusCodeResult;
+
+            // Assert
+            _mockTodoItemRepository.VerifyAll();
+            
+            Assert.NotNull(actual);
+            Assert.Equal(StatusCodes.Status500InternalServerError, actual.StatusCode);
         }
         
         [Fact]
@@ -96,6 +134,25 @@ namespace Todos.WebUI.Tests
             Assert.IsType<OkObjectResult>(result);
             Assert.NotNull(actual);
             Assert.Equal(expectedItem, actual.Value);
+        }
+        
+        [Fact]
+        public async Task Create_ShouldReturn500_WhenRepoThrows()
+        {
+            // Arrange
+            var input = new TodoItem() {Title = "Todo Item"};
+            _mockTodoItemRepository.Setup(_ => _.CreateAsync(input))
+                .ThrowsAsync(new Exception("Unexpected Error"));
+            
+            // Act
+            var result = await _sut.Create(input);
+            var actual = result as StatusCodeResult;
+
+            // Assert
+            _mockTodoItemRepository.VerifyAll();
+            
+            Assert.NotNull(actual);
+            Assert.Equal(StatusCodes.Status500InternalServerError, actual.StatusCode);
         }
         
         [Fact]
@@ -137,6 +194,25 @@ namespace Todos.WebUI.Tests
             
             Assert.IsType<BadRequestResult>(result);
         }
+        
+        [Fact]
+        public async Task Update_ShouldReturn500_WhenRepoThrows()
+        {
+            // Arrange
+            var input = new TodoItem() { Id = 1, Title = "Todo Item Updated"};
+            _mockTodoItemRepository.Setup(_ => _.UpdateAsync(input))
+                .ThrowsAsync(new Exception("Unexpected Error"));
+            
+            // Act
+            var result = await _sut.Update(input.Id, input);
+            var actual = result as StatusCodeResult;
+
+            // Assert
+            _mockTodoItemRepository.VerifyAll();
+            
+            Assert.NotNull(actual);
+            Assert.Equal(StatusCodes.Status500InternalServerError, actual.StatusCode);
+        }
 
         [Fact]
         public async Task Delete_ShouldRemoveItem()
@@ -168,6 +244,25 @@ namespace Todos.WebUI.Tests
             _mockTodoItemRepository.Verify(_ => _.DeleteAsync(It.IsAny<TodoItem>()), Times.Never);
             
             Assert.IsType<BadRequestResult>(result);
+        }
+        
+        [Fact]
+        public async Task Delete_ShouldReturn500_WhenRepoThrows()
+        {
+            // Arrange
+            var input = new TodoItem() { Id = 1, Title = "Todo Item To Delete"};
+            _mockTodoItemRepository.Setup(_ => _.DeleteAsync(input))
+                .ThrowsAsync(new Exception("Unexpected Error"));
+            
+            // Act
+            var result = await _sut.Delete(1, input);
+            var actual = result as StatusCodeResult;
+
+            // Assert
+            _mockTodoItemRepository.VerifyAll();
+            
+            Assert.NotNull(actual);
+            Assert.Equal(StatusCodes.Status500InternalServerError, actual.StatusCode);
         }
     }
 }

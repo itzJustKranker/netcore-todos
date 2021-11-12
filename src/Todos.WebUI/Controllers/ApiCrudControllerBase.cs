@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Todos.Application.Interfaces;
@@ -33,7 +34,7 @@ namespace Todos.WebUI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "[Todos] Unexpected error occurred within /getall");
-                throw;
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
         
@@ -48,7 +49,7 @@ namespace Todos.WebUI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "[Todos] Unexpected error occurred within /getbyid");
-                throw;
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
         
@@ -63,7 +64,7 @@ namespace Todos.WebUI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "[Todos] Unexpected error occurred within /create");
-                throw;
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
         
@@ -81,7 +82,7 @@ namespace Todos.WebUI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "[Todos] Unexpected error occurred within /update");
-                throw;
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
         
@@ -99,7 +100,7 @@ namespace Todos.WebUI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "[Todos] Unexpected error occurred within /delete");
-                throw;
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
     }
