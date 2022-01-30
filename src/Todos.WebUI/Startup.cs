@@ -25,9 +25,7 @@ namespace Todos.WebUI
                 .AddNewtonsoftJson(options =>
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                 );
-            
-            services.ConfigureDbContext(Configuration);
-            
+
             services.AddInternalServices();
         }
 

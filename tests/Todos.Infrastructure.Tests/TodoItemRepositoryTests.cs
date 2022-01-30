@@ -1,12 +1,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
 using System.Threading.Tasks;
-using Moq;
-using Todos.Application.Interfaces;
 using Todos.Domain.Entities;
 using Todos.Infrastructure.Repositories;
-using Todos.Infrastructure.Tests.Helpers;
 using Xunit;
 
 namespace Todos.Infrastructure.Tests
@@ -26,11 +22,7 @@ namespace Todos.Infrastructure.Tests
                     Title = "Test Item"
                 }
             };
-            var mockDbSet = DbContextMockHelper.GetQueryableMockDbSet(expectedItems);
-            var dbContextMock = new Mock<IApplicationDbContext>();
-            dbContextMock.Setup(_ => _.Set<TodoItem>())
-                .Returns(mockDbSet.Object);
-            var sut = new TodoItemRepository(dbContextMock.Object);
+            var sut = new TodoItemRepository();
 
             // Act
             var actual = await sut.GetAllAsync();
@@ -43,11 +35,7 @@ namespace Todos.Infrastructure.Tests
         public async Task GetAllAsync_ShouldReturnEmptyList_WhenNoEntriesPresent()
         {
             // Arrange
-            var mockDbSet = DbContextMockHelper.GetQueryableMockDbSet(new List<TodoItem>());
-            var dbContextMock = new Mock<IApplicationDbContext>();
-            dbContextMock.Setup(_ => _.Set<TodoItem>())
-                .Returns(mockDbSet.Object);
-            var sut = new TodoItemRepository(dbContextMock.Object);
+            var sut = new TodoItemRepository();
 
             // Act
             var actual = await sut.GetAllAsync();
@@ -60,11 +48,7 @@ namespace Todos.Infrastructure.Tests
         public async Task GetAsync_ShouldReturnDefault_WhenItemNotFound()
         {
             // Arrange
-            var mockDbSet = DbContextMockHelper.GetQueryableMockDbSet(new List<TodoItem>());
-            var dbContextMock = new Mock<IApplicationDbContext>();
-            dbContextMock.Setup(_ => _.Set<TodoItem>())
-                .Returns(mockDbSet.Object);
-            var sut = new TodoItemRepository(dbContextMock.Object);
+            var sut = new TodoItemRepository();
             
             // Act
             var actual = await sut.GetAsync(1);
@@ -83,11 +67,7 @@ namespace Todos.Infrastructure.Tests
                 Title = "Test Item"
             };
             var expectedItems = new List<TodoItem>() { expectedItem };
-            var mockDbSet = DbContextMockHelper.GetQueryableMockDbSet(expectedItems);
-            var dbContextMock = new Mock<IApplicationDbContext>();
-            dbContextMock.Setup(_ => _.Set<TodoItem>())
-                .Returns(mockDbSet.Object);
-            var sut = new TodoItemRepository(dbContextMock.Object);
+            var sut = new TodoItemRepository();
             
             // Act
             var actual = await sut.GetAsync(1);
@@ -106,15 +86,7 @@ namespace Todos.Infrastructure.Tests
                 Title = "Todo Created"
             };
             var expectedItems = new List<TodoItem>();
-            var mockDbSet = DbContextMockHelper.GetQueryableMockDbSet(expectedItems);
-            var dbContextMock = new Mock<IApplicationDbContext>();
-            dbContextMock.Setup(_ => _.Set<TodoItem>())
-                .Returns(mockDbSet.Object);
-
-            mockDbSet.Setup(_ => _.AddAsync(It.IsAny<TodoItem>(), It.IsAny<CancellationToken>()))
-                .Callback<TodoItem, CancellationToken>((item, token) => expectedItems.Add(item));
-
-            var sut = new TodoItemRepository(dbContextMock.Object);
+            var sut = new TodoItemRepository();
             
             // Act
             await sut.CreateAsync(expectedItem);
@@ -133,22 +105,12 @@ namespace Todos.Infrastructure.Tests
                 Title = "Todo Item"
             };
             var expectedItems = new List<TodoItem>() { existingItem };
-            var mockDbSet = DbContextMockHelper.GetQueryableMockDbSet(expectedItems);
-            var dbContextMock = new Mock<IApplicationDbContext>();
-            dbContextMock.Setup(_ => _.Set<TodoItem>())
-                .Returns(mockDbSet.Object);
-
             var updatedItem = new TodoItem()
             {
                 Id = 1,
                 Title = "Todo Item Updated"
             };
-            
-            mockDbSet.Setup(_ => _.Update(It.IsAny<TodoItem>()))
-                .Callback<TodoItem>(item =>
-                    expectedItems[expectedItems.FindIndex(x => x.Id == existingItem.Id)] = item);
-
-            var sut = new TodoItemRepository(dbContextMock.Object);
+            var sut = new TodoItemRepository();
             
             // Act
             await sut.UpdateAsync(updatedItem);
@@ -167,15 +129,7 @@ namespace Todos.Infrastructure.Tests
                 Title = "Todo Item"
             };
             var expectedItems = new List<TodoItem>() { existingItem };
-            var mockDbSet = DbContextMockHelper.GetQueryableMockDbSet(expectedItems);
-            var dbContextMock = new Mock<IApplicationDbContext>();
-            dbContextMock.Setup(_ => _.Set<TodoItem>())
-                .Returns(mockDbSet.Object);
-
-            mockDbSet.Setup(_ => _.Remove(It.IsAny<TodoItem>()))
-                .Callback<TodoItem>(item => expectedItems.Remove(item));
-
-            var sut = new TodoItemRepository(dbContextMock.Object);
+            var sut = new TodoItemRepository();
             
             // Act
             await sut.DeleteAsync(existingItem);
