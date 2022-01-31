@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using Moq;
 using Todos.Domain.Entities;
+using Todos.Infrastructure.Persistence;
 using Todos.Infrastructure.Repositories;
 using Xunit;
 
@@ -10,6 +12,14 @@ namespace Todos.Infrastructure.Tests
     [ExcludeFromCodeCoverage]
     public class TodoItemRepositoryTests
     {
+        private readonly Mock<IDbContext> _mockDbContext = new Mock<IDbContext>();
+        private readonly TodoItemRepository _sut;
+        
+        public TodoItemRepositoryTests()
+        {
+            _sut = new TodoItemRepository(_mockDbContext.Object);
+        }
+        
         [Fact]
         public async Task GetAllAsync_ShouldReturnItems_WhenEntitiesExist()
         {
@@ -22,10 +32,9 @@ namespace Todos.Infrastructure.Tests
                     Title = "Test Item"
                 }
             };
-            var sut = new TodoItemRepository();
 
             // Act
-            var actual = await sut.GetAllAsync();
+            var actual = await _sut.GetAllAsync();
             
             // Assert
             Assert.Equal(expectedItems, actual);
@@ -35,10 +44,9 @@ namespace Todos.Infrastructure.Tests
         public async Task GetAllAsync_ShouldReturnEmptyList_WhenNoEntriesPresent()
         {
             // Arrange
-            var sut = new TodoItemRepository();
-
+            
             // Act
-            var actual = await sut.GetAllAsync();
+            var actual = await _sut.GetAllAsync();
             
             // Assert
             Assert.Empty(actual);
@@ -48,10 +56,9 @@ namespace Todos.Infrastructure.Tests
         public async Task GetAsync_ShouldReturnDefault_WhenItemNotFound()
         {
             // Arrange
-            var sut = new TodoItemRepository();
             
             // Act
-            var actual = await sut.GetAsync(1);
+            var actual = await _sut.GetAsync(1);
             
             // Assert
             Assert.Null(actual);
@@ -67,10 +74,9 @@ namespace Todos.Infrastructure.Tests
                 Title = "Test Item"
             };
             var expectedItems = new List<TodoItem>() { expectedItem };
-            var sut = new TodoItemRepository();
-            
+
             // Act
-            var actual = await sut.GetAsync(1);
+            var actual = await _sut.GetAsync(1);
             
             // Assert
             Assert.Equal(expectedItem, actual);
@@ -86,10 +92,9 @@ namespace Todos.Infrastructure.Tests
                 Title = "Todo Created"
             };
             var expectedItems = new List<TodoItem>();
-            var sut = new TodoItemRepository();
-            
+
             // Act
-            await sut.CreateAsync(expectedItem);
+            await _sut.CreateAsync(expectedItem);
             
             // Assert
             Assert.Contains(expectedItem, expectedItems);
@@ -110,10 +115,9 @@ namespace Todos.Infrastructure.Tests
                 Id = 1,
                 Title = "Todo Item Updated"
             };
-            var sut = new TodoItemRepository();
-            
+
             // Act
-            await sut.UpdateAsync(updatedItem);
+            await _sut.UpdateAsync(updatedItem);
             
             // Assert
             Assert.Contains(updatedItem, expectedItems);
@@ -129,10 +133,9 @@ namespace Todos.Infrastructure.Tests
                 Title = "Todo Item"
             };
             var expectedItems = new List<TodoItem>() { existingItem };
-            var sut = new TodoItemRepository();
-            
+
             // Act
-            await sut.DeleteAsync(existingItem);
+            await _sut.DeleteAsync(existingItem);
             
             // Assert
             Assert.DoesNotContain(existingItem, expectedItems);
