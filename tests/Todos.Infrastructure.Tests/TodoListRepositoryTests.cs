@@ -12,7 +12,7 @@ namespace Todos.Infrastructure.Tests
     [ExcludeFromCodeCoverage]
     public class TodoListRepositoryTests
     {
-        private readonly Mock<IDbContext> _mockDbContext = new Mock<IDbContext>();
+        private readonly Mock<IDbContext<TodoList>> _mockDbContext = new Mock<IDbContext<TodoList>>();
         private readonly TodoListRepository _sut;
         
         public TodoListRepositoryTests()
@@ -32,6 +32,8 @@ namespace Todos.Infrastructure.Tests
                     Title = "Test List"
                 }
             };
+            _mockDbContext.Setup(x => x.ExecuteReaderQuery(It.IsAny<string>()))
+                .Returns(expectedLists);
 
             // Act
             var actual = await _sut.GetAllAsync();

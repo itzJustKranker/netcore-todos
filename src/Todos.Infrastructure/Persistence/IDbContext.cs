@@ -1,12 +1,10 @@
-using System.Data;
-using System.Data.SqlClient;
+using System.Collections.Generic;
+using Todos.Domain.Common;
 
 namespace Todos.Infrastructure.Persistence
 {
-    public interface IDbContext
+    public interface IDbContext<TEntity> where TEntity : BaseEntity
     {
-        void ExecuteNonQuery(string commandText, CommandType commandType, params SqlParameter[] parameters);
-        void ExecuteScalar(string commandText, CommandType commandType, params SqlParameter[] parameters);
-        SqlDataReader ExecuteReader(string commandText, CommandType commandType, params SqlParameter[] parameters);
+        IEnumerable<TEntity> ExecuteReaderQuery(string cmd);
     }
 }

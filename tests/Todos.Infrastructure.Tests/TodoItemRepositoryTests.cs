@@ -12,7 +12,7 @@ namespace Todos.Infrastructure.Tests
     [ExcludeFromCodeCoverage]
     public class TodoItemRepositoryTests
     {
-        private readonly Mock<IDbContext> _mockDbContext = new Mock<IDbContext>();
+        private readonly Mock<IDbContext<TodoItem>> _mockDbContext = new Mock<IDbContext<TodoItem>>();
         private readonly TodoItemRepository _sut;
         
         public TodoItemRepositoryTests()

@@ -1,6 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Todos.Application.Interfaces;
+using Todos.Domain.Common;
+using Todos.Domain.Entities;
 using Todos.Infrastructure.Persistence;
 using Todos.Infrastructure.Repositories;
 
@@ -11,13 +13,20 @@ namespace Todos.Infrastructure
     {
         public static IServiceCollection AddInternalServices(this IServiceCollection services)
         {
-            // Register DbContext
-            services.AddScoped<IDbContext, DbContext>();
+            // Register Contexts
+            services.RegisterDbContext<TodoItem>();
+            services.RegisterDbContext<TodoList>();
             
             // Register Repositories
             services.AddScoped<ITodoItemRepository, TodoItemRepository>();
             services.AddScoped<ITodoListRepository, TodoListRepository>();
 
+            return services;
+        }
+
+        private static IServiceCollection RegisterDbContext<TEntity>(this IServiceCollection services) where TEntity : BaseEntity
+        {
+            services.AddSingleton<IDbContext<TEntity>, DbContext<TEntity>>();
             return services;
         }
     }

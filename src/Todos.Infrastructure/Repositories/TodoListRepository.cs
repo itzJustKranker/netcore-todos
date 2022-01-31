@@ -6,7 +6,7 @@ namespace Todos.Infrastructure.Repositories
 {
     public class TodoListRepository : AsyncCrudRepository<TodoList>, ITodoListRepository
     {
-        public TodoListRepository(IDbContext context) : base(context)
+        public TodoListRepository(IDbContext<TodoList> context) : base(context)
         {
         }
     }
