@@ -18,9 +18,9 @@ namespace Todos.Infrastructure.Persistence
             _settings = options.Value;
         }
         
-        public IEnumerable<TEntity> ExecuteReaderQuery(string cmd)
+        public IEnumerable<TEntity> ExecuteReaderQuery(string cmd, params SqlParameter[] parameters)
         {
-            using var reader = ExecuteReader(cmd, CommandType.Text);
+            using var reader = ExecuteReader(cmd, CommandType.Text, parameters);
             var result = new List<TEntity>();
             
             while (reader.Read()) {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Todos.Application.Interfaces;
@@ -27,8 +28,8 @@ namespace Todos.Infrastructure.Repositories
 
         public virtual async Task<TEntity> GetAsync(long id)
         {
-            var cmd = $"SELECT * FROM {TableName} WHERE Id = {id}";
-            var result = Context.ExecuteReaderQuery(cmd);
+            var cmd = $"SELECT * FROM {TableName} WHERE Id = @id";
+            var result = Context.ExecuteReaderQuery(cmd, new SqlParameter("@id", id));
             return result.FirstOrDefault();
         }
 

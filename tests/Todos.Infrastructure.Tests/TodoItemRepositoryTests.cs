@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Moq;
@@ -60,7 +61,7 @@ namespace Todos.Infrastructure.Tests
         public async Task GetAsync_ShouldReturnDefault_WhenItemNotFound()
         {
             // Arrange
-            _mockDbContext.Setup(x => x.ExecuteReaderQuery(It.IsAny<string>()))
+            _mockDbContext.Setup(x => x.ExecuteReaderQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>()))
                 .Returns(new List<TodoItem>());
             
             // Act
@@ -80,7 +81,7 @@ namespace Todos.Infrastructure.Tests
                 Title = "Test Item"
             };
             var expectedItems = new List<TodoItem>() { expectedItem };
-            _mockDbContext.Setup(x => x.ExecuteReaderQuery(It.IsAny<string>()))
+            _mockDbContext.Setup(x => x.ExecuteReaderQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>()))
                 .Returns(expectedItems);
 
             // Act
