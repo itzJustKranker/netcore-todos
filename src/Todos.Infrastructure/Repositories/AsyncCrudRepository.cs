@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Todos.Application.Interfaces;
 using Todos.Domain.Common;
@@ -26,7 +27,9 @@ namespace Todos.Infrastructure.Repositories
 
         public virtual async Task<TEntity> GetAsync(long id)
         {
-            throw new NotImplementedException();
+            var cmd = $"SELECT * FROM {TableName} WHERE Id = {id}";
+            var result = Context.ExecuteReaderQuery(cmd);
+            return result.FirstOrDefault();
         }
 
         public virtual async Task<TEntity> CreateAsync(TEntity entity)

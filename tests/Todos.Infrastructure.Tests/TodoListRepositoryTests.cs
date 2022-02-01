@@ -60,7 +60,9 @@ namespace Todos.Infrastructure.Tests
         public async Task GetAsync_ShouldReturnDefault_WhenItemNotFound()
         {
             // Arrange
-
+            _mockDbContext.Setup(x => x.ExecuteReaderQuery(It.IsAny<string>()))
+                .Returns(new List<TodoList>());
+            
             // Act
             var actual = await _sut.GetAsync(1);
             
@@ -77,7 +79,9 @@ namespace Todos.Infrastructure.Tests
                 Id = 1,
                 Title = "Test List"
             };
-            var expectedItems = new List<TodoList>() { expectedList };
+            var expectedLists = new List<TodoList>() { expectedList };
+            _mockDbContext.Setup(x => x.ExecuteReaderQuery(It.IsAny<string>()))
+                .Returns(expectedLists);
 
             // Act
             var actual = await _sut.GetAsync(1);
