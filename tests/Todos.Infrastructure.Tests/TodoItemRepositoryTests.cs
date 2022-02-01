@@ -32,6 +32,8 @@ namespace Todos.Infrastructure.Tests
                     Title = "Test Item"
                 }
             };
+            _mockDbContext.Setup(x => x.ExecuteReaderQuery(It.IsAny<string>()))
+                .Returns(expectedItems);
 
             // Act
             var actual = await _sut.GetAllAsync();
@@ -44,6 +46,8 @@ namespace Todos.Infrastructure.Tests
         public async Task GetAllAsync_ShouldReturnEmptyList_WhenNoEntriesPresent()
         {
             // Arrange
+            _mockDbContext.Setup(x => x.ExecuteReaderQuery(It.IsAny<string>()))
+                .Returns(new List<TodoItem>());
             
             // Act
             var actual = await _sut.GetAllAsync();
