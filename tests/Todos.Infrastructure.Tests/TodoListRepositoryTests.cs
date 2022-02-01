@@ -99,13 +99,13 @@ namespace Todos.Infrastructure.Tests
                 Id = 1,
                 Title = "Todo List Created"
             };
-            var expectedItems = new List<TodoList>();
+            var expectedLists = new List<TodoList>();
 
             // Act
             await _sut.CreateAsync(expectedList);
             
             // Assert
-            Assert.Contains(expectedList, expectedItems);
+            Assert.Contains(expectedList, expectedLists);
         }
         
         [Fact]
@@ -117,18 +117,18 @@ namespace Todos.Infrastructure.Tests
                 Id = 1,
                 Title = "Todo List"
             };
-            var expectedItems = new List<TodoList>() { existingList };
-            var updatedItem = new TodoList()
+            var expectedLists = new List<TodoList>() { existingList };
+            var updatedList = new TodoList()
             {
                 Id = 1,
                 Title = "Todo List Updated"
             };
 
             // Act
-            await _sut.UpdateAsync(updatedItem);
+            await _sut.UpdateAsync(updatedList);
             
             // Assert
-            Assert.Contains(updatedItem, expectedItems);
+            Assert.Contains(updatedList, expectedLists);
         }
         
         [Fact]
@@ -140,13 +140,13 @@ namespace Todos.Infrastructure.Tests
                 Id = 1,
                 Title = "Todo List"
             };
-            var expectedItems = new List<TodoList>() { existingList };
+            var expectedLists = new List<TodoList>() { existingList };
 
             // Act
             await _sut.DeleteAsync(existingList);
             
             // Assert
-            Assert.DoesNotContain(existingList, expectedItems);
+            Assert.DoesNotContain(existingList, expectedLists);
         }
     }
 }
