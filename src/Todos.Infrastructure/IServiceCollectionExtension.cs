@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Todos.Application.Interfaces;
+using Todos.Application.Providers;
 using Todos.Domain.Common;
 using Todos.Domain.Entities;
 using Todos.Infrastructure.Persistence;
@@ -20,6 +21,9 @@ namespace Todos.Infrastructure
             // Register Repositories
             services.AddScoped<ITodoItemRepository, TodoItemRepository>();
             services.AddScoped<ITodoListRepository, TodoListRepository>();
+            
+            // Register Services
+            services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
             return services;
         }
