@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
@@ -33,8 +35,8 @@ namespace Todos.Infrastructure.Tests
                     Title = "Test Item"
                 }
             };
-            _mockDbContext.Setup(x => x.ExecuteReaderQuery(It.IsAny<string>()))
-                .Returns(expectedItems);
+            _mockDbContext.Setup(x => x.ExecuteReaderQuery(It.IsAny<string>(), CommandType.Text))
+                .ReturnsAsync(expectedItems);
 
             // Act
             var actual = await _sut.GetAllAsync();
@@ -47,8 +49,8 @@ namespace Todos.Infrastructure.Tests
         public async Task GetAllAsync_ShouldReturnEmptyList_WhenNoEntriesPresent()
         {
             // Arrange
-            _mockDbContext.Setup(x => x.ExecuteReaderQuery(It.IsAny<string>()))
-                .Returns(new List<TodoItem>());
+            _mockDbContext.Setup(x => x.ExecuteReaderQuery(It.IsAny<string>(), CommandType.Text))
+                .ReturnsAsync(new List<TodoItem>());
             
             // Act
             var actual = await _sut.GetAllAsync();
@@ -61,8 +63,8 @@ namespace Todos.Infrastructure.Tests
         public async Task GetAsync_ShouldReturnDefault_WhenItemNotFound()
         {
             // Arrange
-            _mockDbContext.Setup(x => x.ExecuteReaderQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>()))
-                .Returns(new List<TodoItem>());
+            _mockDbContext.Setup(x => x.ExecuteReaderQuery(It.IsAny<string>(), CommandType.Text, It.IsAny<SqlParameter[]>()))
+                .ReturnsAsync(new List<TodoItem>());
             
             // Act
             var actual = await _sut.GetAsync(1);
@@ -81,8 +83,8 @@ namespace Todos.Infrastructure.Tests
                 Title = "Test Item"
             };
             var expectedItems = new List<TodoItem>() { expectedItem };
-            _mockDbContext.Setup(x => x.ExecuteReaderQuery(It.IsAny<string>(), It.IsAny<SqlParameter[]>()))
-                .Returns(expectedItems);
+            _mockDbContext.Setup(x => x.ExecuteReaderQuery(It.IsAny<string>(), CommandType.Text, It.IsAny<SqlParameter[]>()))
+                .ReturnsAsync(expectedItems);
 
             // Act
             var actual = await _sut.GetAsync(1);
@@ -98,15 +100,22 @@ namespace Todos.Infrastructure.Tests
             var expectedItem = new TodoItem()
             {
                 Id = 1,
-                Title = "Todo Created"
+                Title = "Todo Created",
+                CreatedAt = DateTime.Parse("2022-02-02T19:05:24.417841Z"),
+                UpdatedAt = DateTime.Parse("2022-02-02T19:05:24.417841Z"),
             };
-            var expectedItems = new List<TodoItem>();
+            _mockDbContext.Setup(x => x.UpsertTimeStamps(It.IsAny<TodoItem>(), It.IsAny<bool>()))
+                .Returns(expectedItem);
 
             // Act
-            await _sut.CreateAsync(expectedItem);
+            var actual = await _sut.CreateAsync(expectedItem);
             
             // Assert
-            Assert.Contains(expectedItem, expectedItems);
+            _mockDbContext.Verify(x => 
+                    x.ExecuteNonQuery(It.IsAny<string>(), It.IsAny<CommandType>(), It.IsAny<SqlParameter[]>()),
+                Times.Once);
+            
+            Assert.Equal(expectedItem, actual);
         }
         
         [Fact]
@@ -116,20 +125,29 @@ namespace Todos.Infrastructure.Tests
             var existingItem = new TodoItem()
             {
                 Id = 1,
-                Title = "Todo Item"
+                Title = "Todo Item",
+                CreatedAt = DateTime.Parse("2022-02-02T19:05:24.417841Z"),
+                UpdatedAt = DateTime.Parse("2022-02-02T19:05:24.417841Z"),
             };
-            var expectedItems = new List<TodoItem>() { existingItem };
             var updatedItem = new TodoItem()
             {
                 Id = 1,
-                Title = "Todo Item Updated"
+                Title = "Todo Item Updated",
+                CreatedAt = DateTime.Parse("2022-02-02T19:05:24.417841Z"),
+                UpdatedAt = DateTime.Parse("2022-02-02T19:05:30.417841Z"),
             };
+            _mockDbContext.Setup(x => x.UpsertTimeStamps(It.IsAny<TodoItem>(), It.IsAny<bool>()))
+                .Returns(updatedItem);
 
             // Act
-            await _sut.UpdateAsync(updatedItem);
+            var actual = await _sut.UpdateAsync(existingItem);
             
             // Assert
-            Assert.Contains(updatedItem, expectedItems);
+            _mockDbContext.Verify(x => 
+                    x.ExecuteNonQuery(It.IsAny<string>(), It.IsAny<CommandType>(), It.IsAny<SqlParameter[]>()),
+                Times.Once);
+            
+            Assert.Equal(updatedItem, actual);
         }
         
         [Fact]
@@ -141,13 +159,14 @@ namespace Todos.Infrastructure.Tests
                 Id = 1,
                 Title = "Todo Item"
             };
-            var expectedItems = new List<TodoItem>() { existingItem };
 
             // Act
             await _sut.DeleteAsync(existingItem);
             
             // Assert
-            Assert.DoesNotContain(existingItem, expectedItems);
+            _mockDbContext.Verify(x => 
+                    x.ExecuteNonQuery(It.IsAny<string>(), It.IsAny<CommandType>(), It.IsAny<SqlParameter[]>()),
+                Times.Once);
         }
     }
 }
