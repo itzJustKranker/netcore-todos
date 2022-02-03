@@ -4,7 +4,7 @@ using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Todos.Domain.Common;
 
-namespace Todos.Infrastructure.Persistence
+namespace Todos.Application.Interfaces
 {
     public interface IDbContext<TEntity> where TEntity : BaseEntity
     {

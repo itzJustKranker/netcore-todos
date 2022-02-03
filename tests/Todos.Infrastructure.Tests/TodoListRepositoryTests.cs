@@ -5,8 +5,8 @@ using System.Data.SqlClient;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Moq;
+using Todos.Application.Interfaces;
 using Todos.Domain.Entities;
-using Todos.Infrastructure.Persistence;
 using Todos.Infrastructure.Repositories;
 using Xunit;
 

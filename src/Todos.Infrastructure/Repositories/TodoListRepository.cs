@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Todos.Application.Interfaces;
 using Todos.Domain.Entities;
-using Todos.Infrastructure.Persistence;
 
 namespace Todos.Infrastructure.Repositories
 {

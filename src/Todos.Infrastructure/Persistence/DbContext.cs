@@ -32,8 +32,8 @@ namespace Todos.Infrastructure.Persistence
                 foreach (var prop in obj.GetType().GetProperties())
                 {
                     if (!reader.HasColumn(prop.Name)) continue;
-                    if (!Equals(reader[prop.Name], DBNull.Value)) {
-                        prop.SetValue(obj, reader[prop.Name], null);
+                    if (!Equals(reader.GetValue(prop.Name), DBNull.Value)) {
+                        prop.SetValue(obj, reader.GetValue(prop.Name), null);
                     }
                 }
                 result.Add(obj);
@@ -41,7 +41,7 @@ namespace Todos.Infrastructure.Persistence
 
             return result;
         }
-        
+
         public async Task ExecuteNonQuery(string commandText, CommandType commandType, params SqlParameter[] parameters)
         {
             await using var conn = CreateSqlConnection();
@@ -52,7 +52,7 @@ namespace Todos.Infrastructure.Persistence
             conn.Open();
             cmd.ExecuteNonQuery();
         }
-
+        
         public TEntity UpsertTimeStamps(TEntity entity, bool creating = false)
         {
             var auditedEntity = entity as AuditedEntity ?? new AuditedEntity();
@@ -62,8 +62,8 @@ namespace Todos.Infrastructure.Persistence
             auditedEntity.UpdatedAt = dateTimeUtcNow;
             return auditedEntity as TEntity;
         }
-
-        private async Task<IDataReader> ExecuteReader(string commandText, CommandType commandType, params SqlParameter[] parameters)
+        
+        private async Task<IDataReaderWrapper> ExecuteReader(string commandText, CommandType commandType, params SqlParameter[] parameters)
         {
             var conn = CreateSqlConnection();
             await using var cmd = new SqlCommand(commandText, conn);
@@ -72,9 +72,9 @@ namespace Todos.Infrastructure.Persistence
 
             conn.Open();
             var reader = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection);
-            return reader;
+            return new DataReaderWrapper(reader);
         }
-
+        
         private SqlConnection CreateSqlConnection()
         {
             return new SqlConnection(_settings.ConnectionString);
