@@ -23,6 +23,13 @@ namespace Todos.Infrastructure.Repositories
             var cmd = $"SELECT * FROM {TableName}";
             return await _context.ExecuteReaderQuery(cmd, CommandType.Text);
         }
+        
+        public ICollection<TodoItem> GetItemsByList(long listId)
+        {
+            var cmd = $"SELECT * FROM {TableName}";
+            var items = _context.ExecuteReaderQuery(cmd, CommandType.Text).Result.ToList();
+            return items.Where(x => x.ListId == listId).ToList();
+        }
 
         public async Task<TodoItem> GetAsync(long id)
         {

@@ -17,11 +17,15 @@ namespace Todos.WebUI.Tests
     public class TodoListsControllerTests
     {
         private readonly Mock<ITodoListRepository> _mockTodoListRepository = new Mock<ITodoListRepository>();
+        private readonly Mock<ITodoItemRepository> _mockTodoItemRepository = new Mock<ITodoItemRepository>();
         private readonly TodoListsController _sut;
 
         public TodoListsControllerTests()
         {
-            _sut = new TodoListsController(new NullLogger<TodoListsController>(), _mockTodoListRepository.Object);
+            _sut = new TodoListsController(
+                new NullLogger<TodoListsController>(), 
+                _mockTodoListRepository.Object,
+                _mockTodoItemRepository.Object);
         }
 
         [Fact]
