@@ -1,0 +1,100 @@
+trigger: none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+parameters:
+  - name: deployEa2
+    displayName: Deploy ea2
+    type: boolean
+    default: true
+  - name: deployCn
+    displayName: Deploy cn
+    type: boolean
+    default: true
+  - name: pipelineDebug
+    displayName: Pipeline Debug
+    type: boolean
+    default: false
+
+variables:
+  projectName: 'netcore-todos'
+  artifactName: 'netcore-todos_Drop'
+  buildDefId: '1' 
+  artifactDir: $(Pipeline.Workspace)/artifacts
+  System.Debug: ${{ parameters.pipelineDebug }}
+
+name: $(BuildDefinitionName)_$(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
+
+resources:
+  repositories:
+    - repository: templates
+      name: common\yaml-templates
+      type: git
+      ref: main
+  pipelines:
+    - pipeline: build-pipeline
+      source: netcore-todos
+      trigger:
+        branches:
+          include:
+            - refs/heads/main
+
+stages:
+
+  - stage: development
+    dependsOn: []
+    displayName: Deploy - Development
+    
+    jobs:
+
+      - ${{ if eq(parameters.deployEa2, true) }}:
+        - template: azure-full-deploy.template.yml@templates
+          parameters:
+            jobName: 'Deploy_ea2_dev'
+            projectName: ${{ variables.projectName }}
+            artifactName: ${{ variables.artifactName }}
+            buildDefId: ${{ variables.buildDefId }}
+            adoEnvironment: Dev - Ride Command Services
+            azureServiceConnection: Azure Devops - VS Pro Sandbox
+            appName: mk-vspro-sandbox-netcore-todos
+            appType: 'webApp'
+            packageLocation: ${{ variables.artifactDir }}
+            
+  - stage: staging
+    dependsOn: []
+    displayName: Deploy - Staging
+    
+    jobs:
+
+      - ${{ if eq(parameters.deployEa2, true) }}:
+        - template: azure-full-deploy.template.yml@templates
+          parameters:
+            jobName: 'Deploy_ea2_stage'
+            projectName: ${{ variables.projectName }}
+            artifactName: ${{ variables.artifactName }}
+            buildDefId: ${{ variables.buildDefId }}
+            adoEnvironment: Stage - Ride Command Services
+            azureServiceConnection: Azure Devops - VS Pro Sandbox
+            appName: mk-vspro-sandbox-netcore-todos
+            appType: 'webApp'
+            packageLocation: ${{ variables.artifactDir }}
+
+  - stage: production
+    dependsOn: []
+    displayName: Deploy - Production
+    
+    jobs:
+
+      - ${{ if eq(parameters.deployEa2, true) }}:
+        - template: azure-full-deploy.template.yml@templates
+          parameters:
+            jobName: 'Deploy_ea2_prod'
+            projectName: ${{ variables.projectName }}
+            artifactName: ${{ variables.artifactName }}
+            buildDefId: ${{ variables.buildDefId }}
+            adoEnvironment: Prod - Ride Command Services
+            azureServiceConnection: Azure Devops - VS Pro Sandbox
+            appName: mk-vspro-sandbox-netcore-todos
+            appType: 'webApp'
+            packageLocation: ${{ variables.artifactDir }}
