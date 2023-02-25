@@ -6,6 +6,7 @@ local.settings.json
 
 # MVC local settings
 appsettings.*.json
+!appsettings.IntegrationTest.json
 
 # User-specific files
 *.suo
