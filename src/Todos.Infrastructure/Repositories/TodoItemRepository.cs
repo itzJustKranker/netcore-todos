@@ -1,80 +1,73 @@
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
+using System;
+using Microsoft.Extensions.Options;
+using Todos.Infrastructure.Persistence;
+using Todos.Infrastructure.Settings;
 using System.Threading.Tasks;
 using Todos.Application.Interfaces;
 using Todos.Domain.Entities;
+using MongoDB.Driver;
 
 namespace Todos.Infrastructure.Repositories
 {
-    public class TodoItemRepository : ITodoItemRepository
+    public class TodoItemRepository : DbContext<TodoItem>, ITodoItemRepository
     {
-        private readonly IDbContext<TodoItem> _context;
-        private const string TableName = "TodoItems";
-
-        public TodoItemRepository(IDbContext<TodoItem> context)
+        private readonly IDateTimeProvider _dateTimeProvider;
+        
+        public TodoItemRepository(
+            IOptions<DatabaseSettings> options,
+            IDateTimeProvider dateTimeProvider) : base(options)
         {
-            _context = context;
+            _dateTimeProvider = dateTimeProvider;
         }
+
+        protected override string CollectionName => "items";
 
         public async Task<IEnumerable<TodoItem>> GetAllAsync()
         {
-            var cmd = $"SELECT * FROM {TableName}";
-            return await _context.ExecuteReaderQuery(cmd, CommandType.Text);
+            var results = await Collection.FindAsync(FilterDefinition<TodoItem>.Empty);
+            return await results.ToListAsync();
         }
 
-        public async Task<TodoItem> GetAsync(long id)
+        public async Task<TodoItem> GetAsync(Guid id)
         {
-            var cmd = $"SELECT * FROM {TableName} WHERE Id = @id";
-            var result = await _context.ExecuteReaderQuery(cmd, CommandType.Text, new SqlParameter("@id", id));
-            return result.FirstOrDefault();
+            var filter = Builders<TodoItem>.Filter.Eq(x => x.Id, id);
+            var result = await Collection.FindAsync(filter);
+            return await result.FirstOrDefaultAsync();
         }
 
         public async Task<TodoItem> CreateAsync(TodoItem entity)
         {
-            var cmd = $"INSERT INTO {TableName} (Title, Description, Completed, Priority, ListId, CreatedAt, UpdatedAt) VALUES (@title, @description, @completed, @priority, @listId, @createdAt, @updatedAt)";
+            entity.CreatedAt = _dateTimeProvider.UtcNow;
+            entity.UpdatedAt = _dateTimeProvider.UtcNow;
 
-            var audited = _context.UpsertTimeStamps(entity, true);
-            
-            var sqlParams = new[]
-            {
-                new SqlParameter("@title", entity.Title),
-                new SqlParameter("@description", entity.Description),
-                new SqlParameter("@completed", entity.Completed),
-                new SqlParameter("@priority", entity.Priority),
-                new SqlParameter("@listId", entity.ListId),
-                new SqlParameter("@createdAt", audited.CreatedAt),
-                new SqlParameter("@updatedAt", audited.UpdatedAt)
-            };
-            await _context.ExecuteNonQuery(cmd, CommandType.Text, sqlParams);
-            return audited;
+            await Collection.InsertOneAsync(entity);
+            return entity;
         }
 
         public async Task<TodoItem> UpdateAsync(TodoItem entity)
         {
-            var cmd = $"UPDATE {TableName} SET Title = @title, Description = @description, Completed = @completed, Priority = @priority, ListId = @listId, UpdatedAt = @updatedAt WHERE Id = @id";
+            var filter = Builders<TodoItem>.Filter.Eq(x => x.Id, entity.Id);
 
-            var audited = _context.UpsertTimeStamps(entity);
-            
-            var sqlParams = new[]
-            {
-                new SqlParameter("@id", entity.Id),
-                new SqlParameter("@title", entity.Title),
-                new SqlParameter("@description", entity.Description),
-                new SqlParameter("@completed", entity.Completed),
-                new SqlParameter("@priority", entity.Priority),
-                new SqlParameter("@listId", entity.ListId),
-                new SqlParameter("@updatedAt", audited.UpdatedAt)
-            };
-            await _context.ExecuteNonQuery(cmd, CommandType.Text, sqlParams);
-            return audited;
+            entity.UpdatedAt = _dateTimeProvider.UtcNow;
+
+            var builder = Builders<TodoItem>.Update.Combine(
+                Builders<TodoItem>.Update.Set(x => x.Title, entity.Title),
+                Builders<TodoItem>.Update.Set(x => x.Description, entity.Description),
+                Builders<TodoItem>.Update.Set(x => x.Completed, entity.Completed),
+                Builders<TodoItem>.Update.Set(x => x.Priority, entity.Priority),
+                Builders<TodoItem>.Update.Set(x => x.ListId, entity.ListId),
+                Builders<TodoItem>.Update.Set(x => x.UpdatedAt, entity.UpdatedAt));
+
+            await Collection.UpdateOneAsync(filter, builder);
+
+            return entity;
         }
 
         public async Task DeleteAsync(TodoItem entity)
         {
-            var cmd = $"DELETE FROM {TableName} WHERE Id = @id";
-            await _context.ExecuteNonQuery(cmd, CommandType.Text, new SqlParameter("@id", entity.Id));
+            var filter = Builders<TodoItem>.Filter.Eq(x => x.Id, entity.Id);
+            await Collection.DeleteOneAsync(filter);
         }
     }
 }

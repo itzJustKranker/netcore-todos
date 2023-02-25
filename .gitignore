@@ -15,6 +15,7 @@ appsettings.*.json
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
+docker-compose.yml
 
 # Build results
 [Dd]ebug/

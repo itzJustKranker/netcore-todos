@@ -4,6 +4,6 @@ namespace Todos.Application.Interfaces
 {
     public interface IDateTimeProvider
     {
-        DateTime UtcNow();
+        DateTime UtcNow { get; }
     }
 }

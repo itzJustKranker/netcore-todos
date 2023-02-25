@@ -38,8 +38,8 @@ namespace Todos.WebUI.Controllers
             }
         }
         
-        [HttpGet("{id:long}")]
-        public virtual async Task<IActionResult> GetById([FromRoute] long id)
+        [HttpGet("{id:Guid}")]
+        public virtual async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             try
             {
@@ -53,7 +53,7 @@ namespace Todos.WebUI.Controllers
             }
         }
         
-        [HttpPost("create")]
+        [HttpPost]
         public virtual async Task<IActionResult> Create([FromBody] TEntity entity)
         {
             try
@@ -68,8 +68,8 @@ namespace Todos.WebUI.Controllers
             }
         }
         
-        [HttpPatch("{id:long}/update")]
-        public virtual async Task<IActionResult> Update([FromRoute] long id, [FromBody] TEntity entity)
+        [HttpPatch("{id:Guid}")]
+        public virtual async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] TEntity entity)
         {
             try
             {
@@ -86,8 +86,8 @@ namespace Todos.WebUI.Controllers
             }
         }
         
-        [HttpDelete("{id:long}/delete")]
-        public virtual async Task<IActionResult> Delete([FromRoute] long id, [FromBody] TEntity entity)
+        [HttpDelete("{id:Guid}")]
+        public virtual async Task<IActionResult> Delete([FromRoute] Guid id, [FromBody] TEntity entity)
         {
             try
             {

@@ -7,7 +7,7 @@ namespace Todos.Domain.Common
         TKey Id { get; }
     }
         
-    public interface IHasKey : IHasKey<long>
+    public interface IHasKey : IHasKey<Guid>
     {
     }
             

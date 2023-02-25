@@ -1,72 +1,69 @@
+using System;
+using MongoDB.Driver;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
+using Microsoft.Extensions.Options;
+using Todos.Infrastructure.Persistence;
+using Todos.Infrastructure.Settings;
 using System.Threading.Tasks;
 using Todos.Application.Interfaces;
 using Todos.Domain.Entities;
 
 namespace Todos.Infrastructure.Repositories
 {
-    public class TodoListRepository : ITodoListRepository
+    public class TodoListRepository : DbContext<TodoList>, ITodoListRepository
     {
-        private readonly IDbContext<TodoList> _context;
-        private const string TableName = "TodoLists";
+        private readonly IDateTimeProvider _dateTimeProvider;
         
-        public TodoListRepository(IDbContext<TodoList> context)
+        public TodoListRepository(
+            IOptions<DatabaseSettings> options,
+            IDateTimeProvider dateTimeProvider) : base(options)
         {
-            _context = context;
+            _dateTimeProvider = dateTimeProvider;
         }
+
+        protected override string CollectionName => "lists";
 
         public async Task<IEnumerable<TodoList>> GetAllAsync()
         {
-            var cmd = $"SELECT * FROM {TableName}";
-            return await _context.ExecuteReaderQuery(cmd, CommandType.Text);
+            var results = await Collection.FindAsync(FilterDefinition<TodoList>.Empty);
+            return await results.ToListAsync();
         }
 
-        public async Task<TodoList> GetAsync(long id)
+        public async Task<TodoList> GetAsync(Guid id)
         {
-            var cmd = $"SELECT * FROM {TableName} WHERE Id = @id";
-            var result = await _context.ExecuteReaderQuery(cmd, CommandType.Text, new SqlParameter("@id", id));
-            return result.FirstOrDefault();
+            var filter = Builders<TodoList>.Filter.Eq(x => x.Id, id);
+            var result = await Collection.FindAsync(filter);
+            return await result.FirstOrDefaultAsync();
         }
 
         public async Task<TodoList> CreateAsync(TodoList entity)
         {
-            var cmd = $"INSERT INTO {TableName} (Title, CreatedAt, UpdatedAt) VALUES (@title, @createdAt, @updatedAt)";
+            entity.CreatedAt = _dateTimeProvider.UtcNow;
+            entity.UpdatedAt = _dateTimeProvider.UtcNow;
 
-            var audited = _context.UpsertTimeStamps(entity, true);
-            
-            var sqlParams = new[]
-            {
-                new SqlParameter("@title", entity.Title),
-                new SqlParameter("@createdAt", audited.CreatedAt),
-                new SqlParameter("@updatedAt", audited.UpdatedAt)
-            };
-            await _context.ExecuteNonQuery(cmd, CommandType.Text, sqlParams);
-            return audited;
+            await Collection.InsertOneAsync(entity);
+            return entity;
         }
 
         public async Task<TodoList> UpdateAsync(TodoList entity)
         {
-            var cmd = $"UPDATE {TableName} SET Title = @title, UpdatedAt = @updatedAt WHERE Id = @id";
+            var filter = Builders<TodoList>.Filter.Eq(x => x.Id, entity.Id);
 
-            var audited = _context.UpsertTimeStamps(entity);
-            
-            var sqlParams = new[]
-            {
-                new SqlParameter("@id", entity.Id),
-                new SqlParameter("@title", entity.Title),
-                new SqlParameter("@updatedAt", audited.UpdatedAt)
-            };
-            await _context.ExecuteNonQuery(cmd, CommandType.Text, sqlParams);
-            return audited;
+            entity.UpdatedAt = _dateTimeProvider.UtcNow;
+
+            var builder = Builders<TodoList>.Update.Combine(
+                Builders<TodoList>.Update.Set(x => x.Title, entity.Title),
+                Builders<TodoList>.Update.Set(x => x.UpdatedAt, entity.UpdatedAt));
+
+            await Collection.UpdateOneAsync(filter, builder);
+
+            return entity;
         }
 
         public async Task DeleteAsync(TodoList entity)
         {
-            var cmd = $"DELETE FROM {TableName} WHERE Id = @id";
-            await _context.ExecuteNonQuery(cmd, CommandType.Text, new SqlParameter("@id", entity.Id));
+            var filter = Builders<TodoList>.Filter.Eq(x => x.Id, entity.Id);
+            await Collection.DeleteOneAsync(filter);
         }
     }
 }

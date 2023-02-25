@@ -14,23 +14,13 @@ namespace Todos.Infrastructure
     {
         public static IServiceCollection AddInternalServices(this IServiceCollection services)
         {
-            // Register Contexts
-            services.RegisterDbContext<TodoItem>();
-            services.RegisterDbContext<TodoList>();
-            
             // Register Repositories
-            services.AddScoped<ITodoItemRepository, TodoItemRepository>();
-            services.AddScoped<ITodoListRepository, TodoListRepository>();
+            services.AddSingleton<ITodoListRepository, TodoListRepository>();
+            services.AddSingleton<ITodoItemRepository, TodoItemRepository>();
             
             // Register Services
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
-            return services;
-        }
-
-        private static IServiceCollection RegisterDbContext<TEntity>(this IServiceCollection services) where TEntity : BaseEntity
-        {
-            services.AddSingleton<IDbContext<TEntity>, DbContext<TEntity>>();
             return services;
         }
     }

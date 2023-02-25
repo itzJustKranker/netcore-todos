@@ -7,6 +7,6 @@
       <ProjectReference Include="..\Todos.Domain\Todos.Domain.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
+      <PackageReference Include="MongoDB.Driver" Version="2.19.0" />
     </ItemGroup>
 </Project>

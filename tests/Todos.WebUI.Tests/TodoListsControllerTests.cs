@@ -16,7 +16,7 @@ namespace Todos.WebUI.Tests
     [ExcludeFromCodeCoverage]
     public class TodoListsControllerTests
     {
-        private readonly Mock<ITodoListRepository> _mockTodoListRepository = new Mock<ITodoListRepository>();
+        private readonly Mock<ITodoListRepository> _mockTodoListRepository = new();
         private readonly TodoListsController _sut;
 
         public TodoListsControllerTests()
@@ -30,9 +30,9 @@ namespace Todos.WebUI.Tests
             // Arrange
             var expectedItems = new List<TodoList>()
             {
-                new TodoList()
+                new()
                 {
-                    Id = 1,
+                    Id = Guid.Empty,
                     Title = "Todo List"
                 }
             };
@@ -52,21 +52,21 @@ namespace Todos.WebUI.Tests
         }
         
         [Fact]
-        public async Task GetAll_ShouldThrow_WhenRepoThrows()
+        public async Task GetAll_ShouldReturn500_WhenRepoThrows()
         {
             // Arrange
-            var expected = new Exception("Unexpected Error");
             _mockTodoListRepository.Setup(_ => _.GetAllAsync())
-                .ThrowsAsync(expected);
+                .ThrowsAsync(new Exception("Unexpected Error"));
             
             // Act
-            var actual = await Assert.ThrowsAsync<Exception>(async () => await _sut.GetAll());
+            var result = await _sut.GetAll();
+            var actual = result as StatusCodeResult;
 
             // Assert
             _mockTodoListRepository.VerifyAll();
             
             Assert.NotNull(actual);
-            Assert.Equal(expected, actual);
+            Assert.Equal(StatusCodes.Status500InternalServerError, actual.StatusCode);
         }
         
         [Fact]
@@ -75,14 +75,14 @@ namespace Todos.WebUI.Tests
             // Arrange
             var expectedItem = new TodoList()
             {
-                Id = 1,
+                Id = Guid.Empty,
                 Title = "Todo List"
             };
-            _mockTodoListRepository.Setup(_ => _.GetAsync(1))
+            _mockTodoListRepository.Setup(_ => _.GetAsync(Guid.Empty))
                 .ReturnsAsync(expectedItem);
             
             // Act
-            var result = await _sut.GetById(1);
+            var result = await _sut.GetById(Guid.Empty);
             var actual = result as OkObjectResult;
 
             // Assert
@@ -97,11 +97,11 @@ namespace Todos.WebUI.Tests
         public async Task GetById_ShouldReturn500_WhenRepoThrows()
         {
             // Arrange
-            _mockTodoListRepository.Setup(_ => _.GetAsync(1))
+            _mockTodoListRepository.Setup(_ => _.GetAsync(Guid.Empty))
                 .ThrowsAsync(new Exception("Unexpected Error"));
             
             // Act
-            var result = await _sut.GetById(1);
+            var result = await _sut.GetById(Guid.Empty);
             var actual = result as StatusCodeResult;
 
             // Assert
@@ -118,7 +118,7 @@ namespace Todos.WebUI.Tests
             var input = new TodoList() {Title = "Todo List"};
             var expectedItem = new TodoList()
             {
-                Id = 1,
+                Id = Guid.Empty,
                 Title = "Todo List"
             };
             _mockTodoListRepository.Setup(_ => _.CreateAsync(input))
@@ -159,10 +159,10 @@ namespace Todos.WebUI.Tests
         public async Task Update_ShouldReturnUpdatedList()
         {
             // Arrange
-            var input = new TodoList() { Id = 1, Title = "Todo List Updated"};
+            var input = new TodoList() { Id = Guid.Empty, Title = "Todo List Updated"};
             var expectedItem = new TodoList()
             {
-                Id = 1,
+                Id = Guid.Empty,
                 Title = "Todo List Updated"
             };
             _mockTodoListRepository.Setup(_ => _.UpdateAsync(input))
@@ -184,10 +184,10 @@ namespace Todos.WebUI.Tests
         public async Task Update_ShouldReturnBadRequest_WhenIdDoesNotMatch()
         {
             // Arrange
-            var input = new TodoList() { Id = 1, Title = "Todo List Updated"};
+            var input = new TodoList() { Id = Guid.Empty, Title = "Todo List Updated"};
 
             // Act
-            var result = await _sut.Update(2, input);
+            var result = await _sut.Update(Guid.NewGuid(), input);
 
             // Assert
             _mockTodoListRepository.VerifyAll();
@@ -199,7 +199,7 @@ namespace Todos.WebUI.Tests
         public async Task Update_ShouldReturn500_WhenRepoThrows()
         {
             // Arrange
-            var input = new TodoList() { Id = 1, Title = "Todo List Updated"};
+            var input = new TodoList() { Id = Guid.Empty, Title = "Todo List Updated"};
             _mockTodoListRepository.Setup(_ => _.UpdateAsync(input))
                 .ThrowsAsync(new Exception("Unexpected Error"));
             
@@ -218,12 +218,12 @@ namespace Todos.WebUI.Tests
         public async Task Delete_ShouldRemoveList()
         {
             // Arrange
-            var input = new TodoList() { Id = 1, Title = "Todo List To Delete"};
+            var input = new TodoList() { Id = Guid.Empty, Title = "Todo List To Delete"};
             _mockTodoListRepository.Setup(_ => _.DeleteAsync(input))
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _sut.Delete(1, input);
+            var result = await _sut.Delete(Guid.Empty, input);
 
             // Assert
             _mockTodoListRepository.Verify(_ => _.DeleteAsync(input), Times.Once);
@@ -235,10 +235,10 @@ namespace Todos.WebUI.Tests
         public async Task Delete_ShouldReturnBadRequest_WhenIdDoesNotMatch()
         {
             // Arrange
-            var input = new TodoList() { Id = 1, Title = "Todo List To Delete"};
+            var input = new TodoList() { Id = Guid.Empty, Title = "Todo List To Delete"};
 
             // Act
-            var result = await _sut.Delete(2, input);
+            var result = await _sut.Delete(Guid.NewGuid(), input);
 
             // Assert
             _mockTodoListRepository.Verify(_ => _.DeleteAsync(It.IsAny<TodoList>()), Times.Never);
@@ -250,12 +250,12 @@ namespace Todos.WebUI.Tests
         public async Task Delete_ShouldReturn500_WhenRepoThrows()
         {
             // Arrange
-            var input = new TodoList() { Id = 1, Title = "Todo List To Delete"};
+            var input = new TodoList() { Id = Guid.Empty, Title = "Todo List To Delete"};
             _mockTodoListRepository.Setup(_ => _.DeleteAsync(input))
                 .ThrowsAsync(new Exception("Unexpected Error"));
             
             // Act
-            var result = await _sut.Delete(1, input);
+            var result = await _sut.Delete(Guid.Empty, input);
             var actual = result as StatusCodeResult;
 
             // Assert
