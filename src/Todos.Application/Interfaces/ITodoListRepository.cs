@@ -1,8 +1,7 @@
+namespace Todos.Application.Interfaces;
+
 using Todos.Domain.Entities;
 
-namespace Todos.Application.Interfaces
+public interface ITodoListRepository : IAsyncCrudRepository<TodoList>
 {
-    public interface ITodoListRepository : IAsyncCrudRepository<TodoList>
-    {
-    }
 }
