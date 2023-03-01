@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Todos.Domain.Entities;
 using Xunit;
 
 [ExcludeFromCodeCoverage]
@@ -33,7 +34,7 @@ public class TodoListsCrudTests : IClassFixture<IntegrationTestWebApplicationFac
         }
         """;
         var url = "/api/todolists";
-        var content = new StringContent(JsonConvert.SerializeObject(json), Encoding.UTF8, "application/json");
+        var content = new StringContent(JsonConvert.SerializeObject(JsonConvert.DeserializeObject<TodoList>(json)), Encoding.UTF8, "application/json");
 
         // Act
         var response = await client.PostAsync(url, content);
@@ -42,5 +43,6 @@ public class TodoListsCrudTests : IClassFixture<IntegrationTestWebApplicationFac
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(actual);
+        Assert.Equal("new", actual.Title);
     }
 }
